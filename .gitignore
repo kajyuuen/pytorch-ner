@@ -1,0 +1,11 @@
+.cache
+.vector_cache
+datasets/*
+__pycache__
+tmp/
+config/*
+nohup.out
+!config/lample.json
+!config/partial.json
+!config/simple.json
+!config/hard.json

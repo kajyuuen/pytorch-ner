@@ -1,0 +1,1 @@
+from src.labeling_tools.data.entity import Entity

@@ -1,0 +1,1 @@
+from src.modules.bilstm_crf import BiLSTM_CRF

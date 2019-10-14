@@ -1,0 +1,32 @@
+{
+    "dataset_path": "datasets/conll2003_bioes_dict",
+    "save_model_path": "tmp/hard",
+    "seed": 42,
+    "model": {
+        "type": "Hard",
+        "embedding": {
+            "word_embedding": {
+                "type": "Glove",
+                "dim": 100
+            },
+            "char_embedding": {
+                "hidden_dim": 50,
+                "dim": 25
+            },
+            "hidden_dim": 200
+        },
+        "dropout_rate": 0.5
+    },
+    "train": {
+        "learning_rate": 0.01,
+        "epochs": 10,
+        "min_epochs": 30,
+        "batch_size": 10
+    },
+    "eval_batch_size": 100,
+    "test_batch_size": 100,
+    "is_digit": true,
+    "is_lower": false,
+    "is_every_all_train": true,
+    "device": 1
+}

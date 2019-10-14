@@ -1,0 +1,30 @@
+{
+    "dataset_path": "datasets/conll2003_bioes",
+    "save_model_path": "tmp/lample",
+    "seed": 42,
+    "model": {
+        "type": "CRF",
+        "embedding": {
+            "word_embedding": {
+                "type": "Glove",
+                "dim": 100
+            },
+            "char_embedding": {
+                "hidden_dim": 50,
+                "dim": 25
+            },
+            "hidden_dim": 200
+        },
+        "dropout_rate": 0.5
+    },
+    "train": {
+        "learning_rate": 0.01,
+        "epochs": 100,
+        "batch_size": 10
+    },
+    "eval_batch_size": 100,
+    "test_batch_size": 100,
+    "is_digit": true,
+    "is_lower": false,
+    "device": 0
+}
