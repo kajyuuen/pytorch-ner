@@ -28,5 +28,6 @@
     "is_digit": true,
     "is_lower": false,
     "is_every_all_train": true,
+    "decode_type": "restricted",
     "device": 1
 }

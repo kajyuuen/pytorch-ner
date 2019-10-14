@@ -7,6 +7,7 @@ from pytorch_partial_crf import PartialCRF
 from typing import Tuple
 
 from src.common.config import PAD_TAG
+from src.common.utils import create_possible_tag_masks
 from src.modules.bilstm import BiLSTM
 
 class BiLSTM_CRF(nn.Module):
@@ -32,7 +33,8 @@ class BiLSTM_CRF(nn.Module):
             self.inferencer = PartialCRF(num_tags)
         else:
             raise ModuleNotFoundError
-        
+        self.num_tags = num_tags
+
     def forward(self, batch) -> torch.Tensor:
         emissions, tags, mask = self._get_variable_for_decode(batch)
         loss = self.inferencer(emissions, tags, mask)
@@ -44,9 +46,9 @@ class BiLSTM_CRF(nn.Module):
         return best_tags_list
 
     def restricted_decode(self, base_batch, batch) -> Tuple[torch.Tensor, torch.Tensor]:
-        _, _, mask = self._get_variable_for_decode(base_batch)
-        emissions, tags, _ = self._get_variable_for_decode(batch)
-        best_tags_list = self.inferencer.restricted_viterbi_decode(emissions, mask)
+        possible_tags = create_possible_tag_masks(self.num_tags, base_batch.label)
+        emissions, _, mask = self._get_variable_for_decode(batch)
+        best_tags_list = self.inferencer.restricted_viterbi_decode(emissions, possible_tags, mask)
         return best_tags_list
 
     def _get_variable_for_decode(self, batch) -> torch.Tensor:

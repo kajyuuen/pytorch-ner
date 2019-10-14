@@ -41,6 +41,11 @@ class Config:
         else:
             self.is_every_all_train = False
 
+        if "decode_type" in setting_json:
+            self.decode_type = setting_json["decode_type"]
+        else:
+            self.decode_type = None
+
         # Trainer config
         if "clipping" in setting_json["train"]:
             clipping = setting_json["train"]["clipping"]
@@ -114,6 +119,8 @@ class Config:
         text += "====Model====\n"
         text += "Inference type: {}\n".format(self.inference_type)
         text += "Dropout rate: {}\n".format(self.dropout_rate)
+        if self.inference_type == "Hard":
+            text += "Decode type: {}\n".format(self.decode_type)
 
         text += "====Trainer====\n"
         text += "SGD: lr {}, L2 regularization: {}\n".format(self.trainer_config["learning_rate"], self.trainer_config["weight_decay"])

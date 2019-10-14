@@ -39,12 +39,14 @@ class HardTrainer:
                  test_dataset = None,
                  label_dict = None,
                  dropout_rate = 0.5,
-                 is_every_all_train = False):
+                 is_every_all_train = False,
+                 decode_type = "restricted"):
         # Hard train config
         self.min_epochs = trainer_config["min_epochs"]
         self.split_num = 2
         self.config = config
         self.is_every_all_train = is_every_all_train
+        self.decode_type = decode_type
 
         # Model config
         self.num_tags = num_tags
@@ -83,13 +85,13 @@ class HardTrainer:
             for train_idx in range(self.split_num):
                 self.train_datasets[train_idx-1] = self._labeling(self.trainers[train_idx].best_model_path,
                                                                   self.first_train_datasets[train_idx-1],
-                                                                  self.train_datasets[train_idx-1])
+                                                                  self.train_datasets[train_idx-1],
+                                                                  decode_type = self.decode_type)
+            if self.is_every_all_train and ind < iter_num+1:
+                self._all_train(self.min_epochs, ind)
             # Update trainers
             for train_idx in range(self.split_num):
                 self.trainers[train_idx] = self._create_trainer(train_idx)
-            
-            if self.is_every_all_train and ind < iter_num+1:
-                self._all_train(self.min_epochs, ind)
         # All Train
         self._all_train(self.min_epochs)
 
@@ -118,13 +120,15 @@ class HardTrainer:
         for base_batch, batch in zip(base_dataset_iteration, dataset_iteration):
             if decode_type == "normal":
                 predict_tags.extend(convert(model.decode(batch), self.label_dict))
-            else:
+            elif decode_type == "restricted":
                 predict_tags.extend(convert(model.restricted_decode(base_batch, batch), self.label_dict))
+            else:
+                raise ModuleNotFoundError
 
         # Labeling
-        for example, predict_label in zip(dataset, predict_tags): 
-            assert len(example.label) == len(predict_label)
-            example.label = predict_label
+        for i in range(len(dataset)):
+            assert len(dataset[i].label) == len(predict_tags[i])
+            dataset[i].label = predict_tags[i]
         
         return dataset
 
