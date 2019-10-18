@@ -9,6 +9,9 @@ PAD_TAG = "<pad>"
 UNLABELED_TAG = "NOANNOTATION"
 UNLABELED_ID = -1
 
+INFERENCE_TYPE = ["CRF", "PartialCRF", "Simple", "Hard"]
+OPTIMIZER_TYPE = ["SGD", "Adam"]
+
 class Config:
     def __init__(self, setting_json):
         self.seed = 42
@@ -67,6 +70,11 @@ class Config:
         else:
             min_epochs = None
 
+        if "optimizer" in setting_json["train"]:
+            optimizer = setting_json["train"]["optimizer"]
+        else:
+            optimizer = "SGD"
+
         batch_size = setting_json["train"]["batch_size"]
         if "eval_batch_size" in setting_json:
             eval_batch_size = setting_json["eval_batch_size"]
@@ -97,11 +105,13 @@ class Config:
             "train_only": train_only,
             "weight_decay": weight_decay,
             "path": setting_json["save_model_path"],
-            "device": self.device
+            "device": self.device,
+            "optimizer": optimizer
         }
 
         # Check
-        assert self.inference_type in ["CRF", "PartialCRF", "Simple", "Hard"]
+        assert self.inference_type in INFERENCE_TYPE
+        assert self.trainer_config["optimizer"] in OPTIMIZER_TYPE
 
     def get_log(self):
         text = ""
@@ -123,7 +133,7 @@ class Config:
             text += "Decode type: {}\n".format(self.decode_type)
 
         text += "====Trainer====\n"
-        text += "SGD: lr {}, L2 regularization: {}\n".format(self.trainer_config["learning_rate"], self.trainer_config["weight_decay"])
+        text += "{}: lr {}, L2 regularization: {}\n".format(self.trainer_config["optimizer"], self.trainer_config["learning_rate"], self.trainer_config["weight_decay"])
         text += "epochs: {}\n".format(self.trainer_config["epochs"])
         text += "clipping: {}\n".format(self.trainer_config["clipping"])
         text += "weight_decay: {}\n".format(self.trainer_config["weight_decay"])

@@ -18,13 +18,14 @@
         "dropout_rate": 0.5
     },
     "train": {
-        "learning_rate": 0.01,
+        "optimizer": "Adam",
+        "learning_rate": 0.001,
         "epochs": 10,
         "min_epochs": 30,
-        "batch_size": 10
+        "batch_size": 1
     },
-    "eval_batch_size": 100,
-    "test_batch_size": 100,
+    "eval_batch_size": 1000,
+    "test_batch_size": 1000,
     "is_digit": true,
     "is_lower": false,
     "is_every_all_train": true,

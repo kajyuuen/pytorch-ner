@@ -24,9 +24,15 @@ class Trainer:
                  label_dict = None):
         self.model = model
         self.label_dict = label_dict
-        self.optimizer = optim.SGD(self.model.parameters(),
-                                   lr = trainer_config["learning_rate"],
-                                   weight_decay = trainer_config["weight_decay"])
+        if trainer_config["optimizer"] == "SGD":
+            self.optimizer = optim.SGD(self.model.parameters(),
+                                    lr = trainer_config["learning_rate"],
+                                    weight_decay = trainer_config["weight_decay"])
+        elif trainer_config["optimizer"] == "Adam":
+            self.optimizer = optim.Adam(self.model.parameters())
+        else:
+            raise ModuleNotFoundError
+
         self.save_path = trainer_config["path"]
         self.clipping = trainer_config["clipping"]
         self.train_only = trainer_config["train_only"]
@@ -85,7 +91,7 @@ class Trainer:
                     best_test_f1 = f1_score(y_true, y_pred)
 
         with open(self.save_path + "/result.log", "a") as f:
-            f.write("\nBest epoch: {}, Test F1: {}\n".format(ind, best_test_f1))
+            f.write("\nBest epoch: {}, Test F1: {}\n".format(best_iteration, best_test_f1))
 
     def _iteration(self, epoch_ind, iteration, type_name, is_train = False):
         if is_train:
